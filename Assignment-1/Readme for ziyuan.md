@@ -110,6 +110,10 @@ Bob's final secret: ebcf9d60aabc7d2f617519f01c50d79270891a6357d42fbbc7f861a64c8a
 - 使用更大的素数 `p` 和生成元 `g`，增强安全性。
 - 实现更复杂的 PAKE 协议，如 OPAQUE。
 - 添加加密和解密的功能，将共享密钥应用于实际的数据加密。
+>1.1 内容更新
+- 完善Message Authentication Code (MAC)可以防止 
+- <kbd> ***Modification*** <kbd>
+M+H(M||K) ---> M'+H(M||K) ___> if H(M'||K)=H(M||K),then verified  
 
 ---
 
@@ -120,5 +124,3 @@ Bob's final secret: ebcf9d60aabc7d2f617519f01c50d79270891a6357d42fbbc7f861a64c8a
 ---
 
 **谢谢使用！**
-
-demo
