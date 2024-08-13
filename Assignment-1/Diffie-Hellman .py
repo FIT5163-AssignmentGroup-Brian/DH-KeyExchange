@@ -41,36 +41,36 @@ def compute_shared_secret(their_public_key, your_private_key, p):
     """
     return pow(their_public_key, your_private_key, p)
 
-# Example: Alice and Bob establish a shared secret using Diffie-Hellman
+# Example: Theo and Knew establish a shared secret using Diffie-Hellman
 
-# Step 1: Alice and Bob generate their private keys
-alice_private_key = generate_private_key(p)
-bob_private_key = generate_private_key(p)
+# Step 1: Theo and Knew generate their private keys
+theo_private_key = generate_private_key(p)
+knew_private_key = generate_private_key(p)
 
-# Step 2: Alice and Bob generate their public keys
-alice_public_key = generate_public_key(alice_private_key, g, p)
-bob_public_key = generate_public_key(bob_private_key, g, p)
+# Step 2: Theo and Knew generate their public keys
+theo_public_key = generate_public_key(theo_private_key, g, p)
+knew_public_key = generate_public_key(knew_private_key, g, p)
 
-# Step 3: Alice and Bob exchange their public keys and compute the shared secret
-alice_shared_secret = compute_shared_secret(bob_public_key, alice_private_key, p)
-bob_shared_secret = compute_shared_secret(alice_public_key, bob_private_key, p)
+# Step 3: Theo and Knew exchange their public keys and compute the shared secret
+theo_shared_secret = compute_shared_secret(knew_public_key, theo_private_key, p)
+knew_shared_secret = compute_shared_secret(theo_public_key, knew_private_key, p)
 
 # Step 4: Verify that both shared secrets are identical
-assert alice_shared_secret == bob_shared_secret, "Shared secrets do not match!"
+assert theo_shared_secret == knew_shared_secret, "Shared secrets do not match!"
 print("Shared secret successfully established.")
-print(f"Alice's shared secret: {alice_shared_secret}")
-print(f"Bob's shared secret: {bob_shared_secret}")
+print(f"Theo's shared secret: {theo_shared_secret}")
+print(f"Knew's shared secret: {knew_shared_secret}")
 
 # Extend to Password Authenticated Key Exchange (PAKE) using a shared password
 
-# Assume Alice and Bob have a pre-shared password
+# Assume Theo and Knew have a pre-shared password
 shared_password = "securepassword123"
 
 # Function to generate a hash of the password combined with a salt
 def generate_password_hash(password, salt):
     """
     Generates a hash of the password combined with a salt using SHA-256.
-    :param password: The shared password between Alice and Bob.
+    :param password: The shared password between Theo and Knew.
     :param salt: A salt value to add randomness to the password hash.
     :return: A hashed value derived from the password and salt.
     """
@@ -94,12 +94,12 @@ def combine_with_password(shared_secret, password_hash):
     combined = (shared_secret + password_hash) % p
     return sha256(str(combined).encode()).hexdigest()
 
-# Step 5: Alice and Bob compute their final authenticated key using the password
-alice_final_secret = combine_with_password(alice_shared_secret, password_hash)
-bob_final_secret = combine_with_password(bob_shared_secret, password_hash)
+# Step 5: Theo and Knew compute their final authenticated key using the password
+theo_final_secret = combine_with_password(theo_shared_secret, password_hash)
+knew_final_secret = combine_with_password(knew_shared_secret, password_hash)
 
 # Step 6: Verify that both final secrets are identical
-assert alice_final_secret == bob_final_secret, "Final shared secrets do not match!"
+assert theo_final_secret == knew_final_secret, "Final shared secrets do not match!"
 print("Password-authenticated shared secret successfully established.")
-print(f"Alice's final secret: {alice_final_secret}")
-print(f"Bob's final secret: {bob_final_secret}")
+print(f"Theo's final secret: {theo_final_secret}")
+print(f"Knew's final secret: {knew_final_secret}")
