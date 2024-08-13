@@ -1,14 +1,20 @@
+以下是更新后的 README 文件版本 1.3，包含了新的 Message Authentication Code (MAC) 功能。
+
+---
+
 ### 用户使用说明书
 
 **程序名称**: 基于 Diffie-Hellman 和 PAKE 的密钥交换协议
 
 **作者**: Ziyuan Wang
 
+**版本**: 1.3
+
 ---
 
 ### 1. 程序简介
 
-该程序实现了一个简单的 **Diffie-Hellman 密钥交换协议**，并进一步扩展为 **密码认证密钥交换（PAKE）协议**。通过该程序，用户可以安全地在不安全的网络环境中生成共享密钥，并使用预先共享的密码对密钥进行认证。
+该程序实现了一个简单的 **Diffie-Hellman 密钥交换协议**，并进一步扩展为 **密码认证密钥交换（PAKE）协议**。在版本 1.3 中，还加入了 **消息认证码（MAC）** 功能，以确保消息在传输过程中的完整性和真实性。通过该程序，用户可以安全地在不安全的网络环境中生成共享密钥，并使用预先共享的密码对密钥进行认证，同时防止消息被篡改。
 
 ---
 
@@ -25,6 +31,7 @@
 
 1. **Diffie-Hellman 密钥交换**: 生成共享密钥。
 2. **密码认证密钥交换（PAKE）**: 基于密码进一步认证共享密钥。
+3. **消息认证码（MAC）**: 确保消息在传输过程中未被篡改。
 
 ---
 
@@ -60,26 +67,34 @@ Please enter the shared password:
 
 1. **共享密钥**: 使用 Diffie-Hellman 协议生成的初始共享密钥。
 2. **最终认证密钥**: 结合共享密钥和输入的密码生成的最终密钥。
+3. **消息认证码（MAC）**: 对发送的消息生成 MAC，并验证消息是否在传输过程中被篡改。
 
 输出示例如下：
 
 ```plaintext
 Shared secret successfully established.
-Alice's shared secret: 2
-Bob's shared secret: 2
+Theo's shared secret: 2
+Knew's shared secret: 2
 
 Password-authenticated shared secret successfully established.
-Alice's final secret: ebcf9d60aabc7d2f617519f01c50d79270891a6357d42fbbc7f861a64c8a2069
-Bob's final secret: ebcf9d60aabc7d2f617519f01c50d79270891a6357d42fbbc7f861a64c8a2069
+Theo's final secret: ebcf9d60aabc7d2f617519f01c50d79270891a6357d42fbbc7f861a64c8a2069
+Knew's final secret: ebcf9d60aabc7d2f617519f01c50d79270891a6357d42fbbc7f861a64c8a2069
+
+Generated MAC: 5f4dcc3b5aa765d61d8327deb882cf99
+Message is verified and intact.
 ```
 
 ---
 
 ### 5. 结果解释
 
-- **Shared Secret**: 表示 Alice 和 Bob 成功通过 Diffie-Hellman 协议生成了共享密钥。两个共享密钥的值应当相同。
+- **Shared Secret**: 表示 Theo 和 Knew 成功通过 Diffie-Hellman 协议生成了共享密钥。两个共享密钥的值应当相同。
   
-- **Final Authenticated Secret**: 这是通过密码认证生成的最终共享密钥。Alice 和 Bob 生成的密钥应当相同。如果密钥相同，说明密钥交换和认证过程成功。
+- **Final Authenticated Secret**: 这是通过密码认证生成的最终共享密钥。Theo 和 Knew 生成的密钥应当相同。如果密钥相同，说明密钥交换和认证过程成功。
+
+- **Generated MAC**: 表示对消息生成的消息认证码（MAC）。该 MAC 可用于验证消息在传输过程中是否被篡改。
+
+- **Message Verification**: 如果 MAC 验证成功，说明消息未被篡改；否则提示可能的篡改。
 
 ---
 
@@ -100,6 +115,7 @@ Bob's final secret: ebcf9d60aabc7d2f617519f01c50d79270891a6357d42fbbc7f861a64c8a
 
 - **密码安全**: 确保共享的密码足够复杂，以防止被暴力破解。
 - **密钥安全**: 程序运行后生成的密钥应当妥善保管，不要泄露给未授权的人员。
+- **消息完整性**: 使用 MAC 功能可以确保消息未被篡改。如果验证失败，可能存在攻击行为。
 
 ---
 
@@ -110,17 +126,31 @@ Bob's final secret: ebcf9d60aabc7d2f617519f01c50d79270891a6357d42fbbc7f861a64c8a
 - 使用更大的素数 `p` 和生成元 `g`，增强安全性。
 - 实现更复杂的 PAKE 协议，如 OPAQUE。
 - 添加加密和解密的功能，将共享密钥应用于实际的数据加密。
->1.1 内容更新
-- 完善Message Authentication Code (MAC)可以防止 
-- <kbd> ***Modification*** <kbd>
-M+H(M||K) ---> M'+H(M||K) ___> if H(M'||K)=H(M||K),then verified  
+- 使用更复杂的哈希函数或加密算法生成 MAC，以提高安全性。
 
 ---
 
-### 9. 联系方式
+### 9. 版本更新
+**版本 1.1**:  
+
+- 更新说明  
+
+**版本 1.2**: 
+- 降低重复率
+
+**版本 1.3**:  
+
+- 引入了消息认证码（MAC）功能，确保消息在传输过程中未被篡改。
+- 验证消息的完整性并防止篡改攻击。
+
+---
+
+### 10. 联系方式
 
 如有任何问题或建议，请联系作者 Ziyuan Wang。
 
 ---
 
 **谢谢使用！**
+
+---

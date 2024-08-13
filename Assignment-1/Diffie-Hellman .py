@@ -41,6 +41,28 @@ def compute_shared_secret(their_public_key, your_private_key, p):
     """
     return pow(their_public_key, your_private_key, p)
 
+# Function to generate a MAC for a given message
+def generate_mac(message, key):
+    """
+    Generates a MAC for a given message using a shared key.
+    :param message: The message to be authenticated.
+    :param key: The shared key used to generate the MAC.
+    :return: The generated MAC.
+    """
+    return sha256((message + key).encode()).hexdigest()
+
+# Function to verify the MAC of a received message
+def verify_mac(received_message, received_mac, key):
+    """
+    Verifies the MAC of a received message.
+    :param received_message: The received message.
+    :param received_mac: The received MAC.
+    :param key: The shared key used to verify the MAC.
+    :return: True if MAC is valid, False otherwise.
+    """
+    generated_mac = generate_mac(received_message, key)
+    return generated_mac == received_mac
+
 # Example: Theo and Knew establish a shared secret using Diffie-Hellman
 
 # Step 1: Theo and Knew generate their private keys
@@ -103,3 +125,21 @@ assert theo_final_secret == knew_final_secret, "Final shared secrets do not matc
 print("Password-authenticated shared secret successfully established.")
 print(f"Theo's final secret: {theo_final_secret}")
 print(f"Knew's final secret: {knew_final_secret}")
+
+# Step 7: Use the final authenticated key to generate and verify a MAC for a message
+# Example message
+message = "This is a secure message."
+
+# Generate a MAC for the message
+mac = generate_mac(message, theo_final_secret)
+print(f"Generated MAC: {mac}")
+
+# Simulate sending the message and MAC to Knew
+received_message = message  # Assume the message is received correctly
+received_mac = mac  # Assume the MAC is received correctly
+
+# Knew verifies the MAC
+if verify_mac(received_message, received_mac, knew_final_secret):
+    print("Message is verified and intact.")
+else:
+    print("Message verification failed! Possible modification detected.")
