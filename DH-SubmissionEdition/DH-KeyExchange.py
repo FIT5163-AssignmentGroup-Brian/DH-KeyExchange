@@ -66,7 +66,7 @@ def generate_base(num):
 
 
 # key exchange process implementation
-def key_exchange_process():
+def key_exchange_process(person1, person2):
     # Implement two const for computation
     P = generate_large_prime()
     G = generate_base(P)
@@ -75,6 +75,43 @@ def key_exchange_process():
     # To do : need to implemetation Person object class
     theo = Person("Theo")
     knew = Person("Knew")
+
+    #compute constant
+    theo.set_parameters(P,G)
+    knew.set_parameters(P,G)
+
+    #generate public and private keys
+    theo.generate_keys()
+    knew.generate_keys()
+
+    #now we sign keys
+    theo_PK_signed = theo.sign_data(str(theo.public_key).encode())
+    knew_PK_signed = knew.sign_data(str(knew.public_key).encode())
+
+    # exchange and verify
+    if not theo.verify_signature(str(knew.public_key).encode(), knew_PK_signed, knew.signature_key.publickey()):
+        print("Knew's key verfication failed")
+        print("Key exchange process ended")
+        return
+    
+    if not knew.verify_signature(str(theo.public_key).encode(), theo_PK_signed, theo.signature_key.publickey()):
+        print("Theo's key verfication failed")
+        print("Key exchange process ended")
+        return
+
+    # generate shared secret 
+    theo_secret = theo.generate_shared_secret(knew.public_key)
+    knew_secret = knew.generate_shared_secret(theo.public_key)
+
+    # print(theo)
+    # print(knew)
+    assert theo_secret == knew_secret, "The shared secrets do not match!"
+    print("Shared secret successfully established.")
+
+
+
+
+
 
 
 
