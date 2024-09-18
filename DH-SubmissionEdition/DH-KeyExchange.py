@@ -66,15 +66,15 @@ def generate_base(num):
 
 
 # key exchange process implementation
-def key_exchange_process(person1, person2):
+def key_exchange_process(person1=Person("Theo") , person2=Person("Knew")):
     # Implement two const for computation
     P = generate_large_prime()
     G = generate_base(P)
 
     # Simulate key exchange process
     # To do : need to implemetation Person object class
-    theo = Person("Theo")
-    knew = Person("Knew")
+    theo = person1
+    knew = person2
 
     #compute constant
     theo.set_parameters(P,G)
@@ -108,7 +108,50 @@ def key_exchange_process(person1, person2):
     assert theo_secret == knew_secret, "The shared secrets do not match!"
     print("Shared secret successfully established.")
 
+def simulate_mitm_attack():
+    # Simulate a man-in-the-middle attack
 
+    # Generate common parameters p and g
+    p = generate_large_prime()
+    g = generate_base(p)
+
+    # Create participants Theo, Knew, and attacker Eve
+    theo = Person("Theo")
+    knew = Person("Knew")
+    eve = Person("Eve")  # The adversary 
+
+    # Set common parameters and generate keys
+    for person in [theo, knew, eve]:
+        person.set_parameters(p, g)
+        person.generate_keys()
+
+    # sign their public keys
+    theo_public_key_signed = theo.sign_data(str(theo.public_key).encode())
+    knew_public_key_signed = knew.sign_data(str(knew.public_key).encode())
+
+    # Eve intercepts and modifies the key exchange
+    # Eve sends her own public key to Knew instead of Theo's
+    if not knew.verify_signature(str(eve.public_key).encode(), theo_public_key_signed, theo.signature_key.publickey()):
+        print("Man-in-the-middle detected: Theo's key verification failed")
+        return  # Stop exchange on detection
+
+    # Theo verifies Knew's public key normally
+    if not theo.verify_signature(str(knew.public_key).encode(), knew_public_key_signed, knew.signature_key.publickey()):
+        print("Man-in-the-middle detected: Knew's key verification failed")
+        return
+
+    # Step 6: Generate shared secrets with wrong keys
+    theo_secret = theo.generate_shared_secret(knew.public_key)
+    knew_secret = knew.generate_shared_secret(eve.public_key)  # Knew uses Eve's key instead of Theo's
+
+    # Step 7: Print results
+    # print(theo)
+    # print(knew)
+
+    # Step 8: Validate that shared secrets match (they will not)
+    assert theo_secret == knew_secret, "The shared secrets do not match!"
+
+    print("Man-in-the-middle attack did not disrupt the key exchange.")
 
 
 
@@ -121,8 +164,11 @@ def key_exchange_process(person1, person2):
 
 # main function
 if __name__ == "__main__":
+
+    theo = Person("Theo")
+    knew = Person("Knew")
     # key exchange
-    key_exchange_process()
+    key_exchange_process(theo,knew)
 
     # simulate attack 
 
