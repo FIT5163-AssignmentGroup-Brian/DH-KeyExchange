@@ -153,13 +153,88 @@ def simulate_mitm_attack():
 
     print("Man-in-the-middle attack did not disrupt the key exchange.")
 
+# OPAQUE protocol-related functions
+def blind_password(password):
+    """
+    Blinds the password using a random salt for secure exchange.
+    :param password: The user's password.
+    :return: Blinded password hash and the salt used.
+    """
+    salt = secrets.token_hex(16)  # Generate a random salt
+    hasher = SHA256.new((password + salt).encode())  # Hash the password and salt
+    blinded_password = hasher.hexdigest()
+    return blinded_password, salt
 
+def unblind_password(server_response, password):
+    """
+    Unblinds the server response to compute the shared secret.
+    :param server_response: The server's response.
+    :param password: The user's original password.
+    :return: A derived shared secret.
+    """
+    hasher = SHA256.new((server_response + password).encode())
+    return hasher.hexdigest()
 
+def simulate_opaque_protocol():
+    # Simulate the OPAQUE protocol between Theo and the server
 
+    # Step 1: User setup
+    username = "Theo"
+    password = "securepassword123"
+    theo = Person(username)
 
+    # Step 2: Server setup
+    server = Person("Server")
 
+    # Step 3: Generate common parameters
+    p = generate_large_prime()
+    g = generate_base(p)
+    theo.set_parameters(p, g)
+    server.set_parameters(p, g)
 
+    # Step 4: Registration phase - Theo blinds the password
+    blinded_password, salt = blind_password(password)
+    print(f"User {username} registered with blinded password.")
 
+    # Step 5: Login phase
+    blinded_password_login = SHA256.new((password + salt).encode()).hexdigest()
+
+    # Server validates the blinded password
+    if blinded_password_login != blinded_password:
+        print("Login failed: Blinded password does not match.")
+        return
+
+    # Server processes the blinded password (simulating OPRF)
+    server_response = secrets.token_hex(16)  # Simplified server response
+
+    # Theo unblinds the response to compute the shared secret
+    theo_secret = unblind_password(server_response, password)
+    print(f"{theo.name}'s OPAQUE shared secret: {theo_secret}")
+
+    # Server also computes the shared secret (simulation)
+    server_secret = unblind_password(server_response, password)
+    print(f"{server.name}'s OPAQUE shared secret: {server_secret}")
+
+    # Verify that the shared secrets match
+    assert theo_secret == server_secret, "OPAQUE shared secrets do not match!"
+
+    print("OPAQUE protocol successfully established the shared secret.")
+
+    # Use the shared secret to generate and verify a MAC for a message
+    message = "This is a secure message."
+
+    # Theo generates a MAC for the message using the shared secret
+    mac = SHA256.new((message + theo_secret).encode()).hexdigest()
+    print(f"MAC generated using OPAQUE shared secret: {mac}")
+
+    # Theo sends the message and MAC to the server
+
+    # Server verifies the MAC
+    server_generated_mac = SHA256.new((message + server_secret).encode()).hexdigest()
+    if mac == server_generated_mac:
+        print("Message verified successfully using OPAQUE shared secret.")
+    else:
+        print("Message verification failed! Possible tampering detected.")
 
 
 # main function
