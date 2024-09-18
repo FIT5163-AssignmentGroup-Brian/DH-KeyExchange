@@ -1,6 +1,7 @@
 # this is the implementation of our FIT5163 DH Keyexchange
 import random
 import secrets
+from sympy import isprime
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -50,6 +51,18 @@ class Person:
         # Return a string representation including name, public key, and shared secret
         return f"{self.name} - Public Key: {self.public_key}, Shared Secret: {self.shared_secret}"
 
+
+# generate large Prime number
+def generate_large_prime():
+    while True:
+        num = random.getrandbits(1024) # random number 1024bits
+        if isprime(num):
+            return num 
+
+
+# generate base const based on Prime
+def generate_base(num):
+    return secrets.randbelow(num-2) + 2 # range [2,p-2]
 
 
 # key exchange process implementation
