@@ -24,8 +24,8 @@ class Person:
 
     def generate_keys(self):
         # Generate private and public keys
-        self.private_key = secrets.randbelow(self.p - 2) + 2  # Random private key in range [2, p-1]
-        self.public_key = pow(self.g, self.private_key, self.p)  
+        self.private_key = secrets.randbelow(self.P - 2) + 2  # Random private key in range [2, p-1]
+        self.public_key = pow(self.G, self.private_key, self.P)  
 
     def sign_data(self, data):
         # Sign data using RSA private key
@@ -44,7 +44,7 @@ class Person:
 
     def generate_shared_secret(self, other_public_key):
         # Compute the shared secret key
-        self.shared_secret = pow(other_public_key, self.private_key, self.p)
+        self.shared_secret = pow(other_public_key, self.private_key, self.P)
         return self.shared_secret
 
     def __str__(self):
@@ -242,9 +242,15 @@ if __name__ == "__main__":
 
     theo = Person("Theo")
     knew = Person("Knew")
+    print("----- Simulating Key Exchange ----")
     # key exchange
     key_exchange_process(theo,knew)
 
     # simulate attack 
+    print("---- Simulating Man in the Middle Attack ----")
+    simulate_mitm_attack()
+
 
     # Add PAKE/OPAQUE protocol 
+    print("---- simulate OPAQUE Protocol ----")
+    simulate_opaque_protocol()
