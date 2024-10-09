@@ -1,7 +1,7 @@
 # this is the implementation of our FIT5163 DH Keyexchange
 import random
 import secrets
-from sympy import isprime
+from sympy import isprime, nextprime
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from Crypto.Signature import pkcs1_15
@@ -62,7 +62,17 @@ def generate_large_prime():
 
 # generate base const based on Prime
 def generate_base(num):
-    return secrets.randbelow(num-2) + 2 # range [2,p-2]
+    candidate = secrets.randbelow(num - 4) + 2  # This ensures the candidate is between 2 and p-2
+
+    # Find the next prime number starting from the candidate
+    prime_base = nextprime(candidate)
+
+    # Ensure that the prime is less than p-1
+    while prime_base >= num - 1:
+        candidate = secrets.randbelow(num - 4) + 2
+        prime_base = nextprime(candidate)
+
+    return prime_base
 
 
 # key exchange process implementation
